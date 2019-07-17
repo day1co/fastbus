@@ -1,6 +1,6 @@
 {
   "name": "@fastcampus/fastbus",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "fast and simple pubsub using redis",
   "main": "index.js",
   "scripts": {
