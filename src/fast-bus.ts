@@ -7,6 +7,7 @@ const debug = Debug('fc:fastbus');
 type FastBusOpts = {
   prefix?: string;
   redis?: ClientOpts;
+  createRedisClient?: (ClientOpts) => RedisClient;
 };
 
 type FastBusSubscriber = (string) => void;
@@ -62,12 +63,10 @@ export default class FastBus {
     }
   }
 
-  /**
-   * @param {*} opts
-   */
-  init(opts) {
-    this.pubClient = createClient(opts.redis);
-    this.subClient = createClient(opts.redis);
+  init(opts: FastBusOpts) {
+    const createRedisClient = opts.createRedisClient || createClient;
+    this.pubClient = createRedisClient(opts.redis);
+    this.subClient = createRedisClient(opts.redis);
     debug(`connect redis: ${opts.redis.host}:${opts.redis.port}/${opts.redis.db}`);
 
     this.prefix = `${opts.prefix || 'bus'}:${opts.redis.db || '0'}:`;

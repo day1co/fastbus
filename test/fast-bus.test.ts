@@ -1,4 +1,4 @@
-import redis from 'redis';
+import redis from 'redis-mock';
 import FastBus from '../src/fast-bus';
 
 describe('FastBus', () => {
@@ -8,7 +8,7 @@ describe('FastBus', () => {
 
   beforeEach(done => {
     const redisConfig = { host: 'localhost', port: 6379, db: 0 };
-    bus = FastBus.create({ prefix: 'bustest', redis: redisConfig });
+    bus = FastBus.create({ prefix: 'bustest', redis: redisConfig, createRedisClient: redis.createClient });
     client = redis.createClient(redisConfig);
     client.flushdb(done);
   });
