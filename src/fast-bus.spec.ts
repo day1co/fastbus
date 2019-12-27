@@ -1,5 +1,5 @@
 import redis from 'redis-mock';
-import FastBus from '../src/fast-bus';
+import FastBus from './fast-bus';
 
 describe('FastBus', () => {
   let bus;
