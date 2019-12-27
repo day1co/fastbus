@@ -1,14 +1,10 @@
-const { describe, it } = require('mocha');
-const { expect } = require('chai');
-const redis = require('redis');
-
-const FastBus = require('../lib');
-
-const TEST_DELAY = 100;
+import redis from 'redis';
+import FastBus from '../src/fast-bus';
 
 describe('FastBus', () => {
   let bus;
   let client;
+  const TEST_DELAY = 100;
 
   beforeEach(done => {
     const redisConfig = { host: 'localhost', port: 6379, db: 0 };
@@ -24,7 +20,7 @@ describe('FastBus', () => {
   });
 
   describe('publish/subscribe', () => {
-    it('should forward messages to only one receiver', done => {
+    test('should forward messages to only one receiver', done => {
       const acc = [];
       bus.subscribe('hello', message => {
         acc.push(message);
@@ -38,13 +34,13 @@ describe('FastBus', () => {
       bus.publish('hello', 'baz');
       bus.publish('hello', 'qux');
       setTimeout(() => {
-        expect(acc).to.eql(['foo', 'bar', 'baz', 'qux']);
-        expect(acc2).to.eql([]);
+        expect(acc).toEqual(['foo', 'bar', 'baz', 'qux']);
+        expect(acc2).toEqual([]);
         done();
       }, TEST_DELAY);
     });
 
-    it('should not forward messages after unreceive', done => {
+    test('should not forward messages after unreceive', done => {
       const acc = [];
       const listener1 = message => {
         acc.push(message);
@@ -63,8 +59,8 @@ describe('FastBus', () => {
           bus.publish('hello', 'baz');
           bus.publish('hello', 'qux');
           setTimeout(() => {
-            expect(acc).to.eql(['foo', 'bar']);
-            expect(acc2).to.eql(['baz', 'qux']);
+            expect(acc).toEqual(['foo', 'bar']);
+            expect(acc2).toEqual(['baz', 'qux']);
             done();
           }, TEST_DELAY);
         }, TEST_DELAY);
@@ -87,13 +83,13 @@ describe('FastBus', () => {
       bus.publish('hello', 'baz', true);
       bus.publish('hello', 'qux', true);
       setTimeout(() => {
-        expect(acc).to.eql(['foo', 'bar', 'baz', 'qux']);
-        expect(acc2).to.eql(['foo', 'bar', 'baz', 'qux']);
+        expect(acc).toEqual(['foo', 'bar', 'baz', 'qux']);
+        expect(acc2).toEqual(['foo', 'bar', 'baz', 'qux']);
         done();
       }, TEST_DELAY);
     });
 
-    it('should not forward messages after unsubscribe', done => {
+    test('should not forward messages after unsubscribe', done => {
       const acc = [];
       const listener1 = message => {
         acc.push(message);
@@ -112,8 +108,8 @@ describe('FastBus', () => {
           bus.publish('hello', 'baz', true);
           bus.publish('hello', 'qux', true);
           setTimeout(() => {
-            expect(acc).to.eql(['foo', 'bar']);
-            expect(acc2).to.eql(['foo', 'bar', 'baz', 'qux']);
+            expect(acc).toEqual(['foo', 'bar']);
+            expect(acc2).toEqual(['foo', 'bar', 'baz', 'qux']);
             done();
           }, TEST_DELAY);
         }, TEST_DELAY);

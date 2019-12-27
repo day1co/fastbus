@@ -1,4 +1,4 @@
-const FastBus = require('../lib');
+const FastBus = require('../dist');
 
 const bus = FastBus.create({ prefix: 'bus', redis: { host: 'localhost', port: 6379, db: 0 } });
 

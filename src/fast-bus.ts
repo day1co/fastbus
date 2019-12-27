@@ -1,9 +1,23 @@
-const debug = require('debug')('fc:fastbus');
-const { EventEmitter } = require('events');
-const redis = require('redis');
+import Debug from 'debug';
+import { EventEmitter } from 'events';
+import { ClientOpts, RedisClient, createClient } from 'redis';
 
-class FastBus {
-  constructor(opts) {
+const debug = Debug('fc:fastbus');
+
+type FastBusOpts = {
+  prefix?: string;
+  redis?: ClientOpts;
+};
+
+type FastBusSubscriber = (string) => void;
+
+export default class FastBus {
+  prefix: string;
+  subscriptions: EventEmitter;
+  pubClient: RedisClient;
+  subClient: RedisClient;
+
+  constructor(opts?: FastBusOpts) {
     this.init(opts);
   }
 
@@ -12,12 +26,7 @@ class FastBus {
     return this.prefix + topic;
   }
 
-  /**
-   * @param {string} topic
-   * @param {string} message
-   * @param {boolean} broadcast=false
-   */
-  publish(topic, message, broadcast = false) {
+  publish(topic: string, message: string, broadcast: boolean = false) {
     debug('publish', topic, message, broadcast);
     const channel = this.toChannelName(topic);
     if (broadcast) {
@@ -34,28 +43,17 @@ class FastBus {
     });
   }
 
-  /**
-   * @param {string} topic
-   * @param {function} listener
-   */
-  subscribe(topic, listener) {
+  subscribe(topic: string, listener: FastBusSubscriber) {
     debug('subscribe', topic);
     this.subscriptions.on(this.toChannelName(topic), listener);
   }
 
-  /**
-   * @param {string} topic
-   * @param {function} listener
-   */
-  unsubscribe(topic, listener) {
+  unsubscribe(topic: string, listener: FastBusSubscriber) {
     debug('unsubscribe', topic);
     this.subscriptions.off(this.toChannelName(topic), listener);
   }
 
-  /**
-   * @param {string} [topic]
-   */
-  unsubscribeAll(topic) {
+  unsubscribeAll(topic?: string) {
     debug('unsubscribeAll', topic);
     if (topic) {
       this.subscriptions.removeAllListeners(this.toChannelName(topic));
@@ -68,8 +66,8 @@ class FastBus {
    * @param {*} opts
    */
   init(opts) {
-    this.pubClient = redis.createClient(opts.redis);
-    this.subClient = redis.createClient(opts.redis);
+    this.pubClient = createClient(opts.redis);
+    this.subClient = createClient(opts.redis);
     debug(`connect redis: ${opts.redis.host}:${opts.redis.port}/${opts.redis.db}`);
 
     this.prefix = `${opts.prefix || 'bus'}:${opts.redis.db || '0'}:`;
@@ -92,7 +90,7 @@ class FastBus {
       const listener = this.subscriptions.listeners(channel)[0];
       this.pubClient.rpop(channel, (err, message) => {
         if (err) {
-          debug('**warning** rpop error!', err, channel, q);
+          debug('**warning** rpop error!', err, channel);
         }
         if (message) {
           listener(message);
@@ -114,9 +112,7 @@ class FastBus {
     this.pubClient.end(true);
   }
 
-  static create(opts) {
+  static create(opts?: FastBusOpts): FastBus {
     return new FastBus(opts);
   }
 }
-
-module.exports = FastBus;
