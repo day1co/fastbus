@@ -2,7 +2,7 @@ import Debug from 'debug';
 import { EventEmitter } from 'events';
 import { ClientOpts, RedisClient, createClient } from 'redis';
 
-const debug = Debug('fc:fastbus');
+const debug = Debug('fastbus');
 
 type FastBusOpts = {
   prefix?: string;
