@@ -34,7 +34,7 @@ export default class FastBus {
       this.pubClient.publish(channel, message);
       return;
     }
-    this.pubClient.lpush(channel, message, err => {
+    this.pubClient.lpush(channel, message, (err) => {
       if (err) {
         debug('**warning** lpush error!', channel, message, err);
         return;

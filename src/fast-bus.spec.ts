@@ -6,27 +6,27 @@ describe('FastBus', () => {
   let client;
   const TEST_DELAY = 100;
 
-  beforeEach(done => {
+  beforeEach((done) => {
     const redisConfig = { host: 'localhost', port: 6379, db: 0 };
     bus = FastBus.create({ prefix: 'bustest', redis: redisConfig, createRedisClient: redis.createClient });
     client = redis.createClient(redisConfig);
     client.flushdb(done);
   });
 
-  afterEach(done => {
+  afterEach((done) => {
     client.end(true);
     bus.destroy();
     setTimeout(done, TEST_DELAY);
   });
 
   describe('publish/subscribe', () => {
-    test('should forward messages to only one receiver', done => {
+    test('should forward messages to only one receiver', (done) => {
       const acc = [];
-      bus.subscribe('hello', message => {
+      bus.subscribe('hello', (message) => {
         acc.push(message);
       });
       const acc2 = [];
-      bus.subscribe('hello', message => {
+      bus.subscribe('hello', (message) => {
         acc2.push(message);
       });
       bus.publish('hello', 'foo');
@@ -40,14 +40,14 @@ describe('FastBus', () => {
       }, TEST_DELAY);
     });
 
-    test('should not forward messages after unreceive', done => {
+    test('should not forward messages after unreceive', (done) => {
       const acc = [];
-      const listener1 = message => {
+      const listener1 = (message) => {
         acc.push(message);
       };
       bus.subscribe('hello', listener1);
       const acc2 = [];
-      const listener2 = message => {
+      const listener2 = (message) => {
         acc2.push(message);
       };
       bus.subscribe('hello', listener2);
@@ -69,13 +69,13 @@ describe('FastBus', () => {
   });
 
   describe('broadcast', () => {
-    it('should forward messages to all subscribers', done => {
+    it('should forward messages to all subscribers', (done) => {
       const acc = [];
-      bus.subscribe('hello', message => {
+      bus.subscribe('hello', (message) => {
         acc.push(message);
       });
       const acc2 = [];
-      bus.subscribe('hello', message => {
+      bus.subscribe('hello', (message) => {
         acc2.push(message);
       });
       bus.publish('hello', 'foo', true);
@@ -89,14 +89,14 @@ describe('FastBus', () => {
       }, TEST_DELAY);
     });
 
-    test('should not forward messages after unsubscribe', done => {
+    test('should not forward messages after unsubscribe', (done) => {
       const acc = [];
-      const listener1 = message => {
+      const listener1 = (message) => {
         acc.push(message);
       };
       bus.subscribe('hello', listener1);
       const acc2 = [];
-      const listener2 = message => {
+      const listener2 = (message) => {
         acc2.push(message);
       };
       bus.subscribe('hello', listener2);
