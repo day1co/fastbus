@@ -2,6 +2,8 @@
   "name": "@fastcampus/fastbus",
   "version": "0.1.1",
   "description": "fast and simple pubsub using redis",
+  "url": "https://github.com/fastcampusgit/fastbus",
+  "repository": "https://github.com/fastcampusgit/fastbus",
   "main": "index.js",
   "scripts": {
     "prepare": "npm run build",
