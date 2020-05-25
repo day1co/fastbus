@@ -1,6 +1,6 @@
 {
   "name": "@fastcampus/fastbus",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "fast and simple pubsub using redis",
   "url": "https://github.com/fastcampusgit/fastbus",
   "repository": "https://github.com/fastcampusgit/fastbus",
