@@ -12,7 +12,7 @@ type FastBusOpts = {
 
 type FastBusSubscriber = (string) => void;
 
-export default class FastBus {
+export class FastBus {
   prefix: string;
   subscriptions: EventEmitter;
   pubClient: RedisClient;
@@ -23,7 +23,7 @@ export default class FastBus {
   }
 
   // 주의: redis pub/sub 은 db(key space)를 구분하지 않음 기본 db가 아니면 토픽 이름에 db 를 포함
-  toChannelName(topic) {
+  private toChannelName(topic) {
     return this.prefix + topic;
   }
 

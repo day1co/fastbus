@@ -1,1 +1,1 @@
-export * from './fast-bus';
+export { FastBus } from './fast-bus';
