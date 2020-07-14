@@ -2,6 +2,8 @@
 
 fast and simple pubsub using redis
 
+[![npm version](https://badge.fury.io/js/%40fastcampus%2Ffastbus.svg)](https://badge.fury.io/js/%40fastcampus%2Ffastbus)
+
 ## Getting Started
 
 ```js
