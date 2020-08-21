@@ -24,16 +24,23 @@ bus.publish('greeting', 'everyone', true);
 
 ## Contributing
 
-### lint
-
-```console
-$ npm run lint
-```
-
 ### test
 
 ```console
-$ npm run test
+$ npm test
 ```
 
+### build
+
+```console
+$ npm run build
+```
+
+### watch(continuous build)
+
+```console
+$ npm start
+```
+
+---
 may the **SOURCE** be with you...
