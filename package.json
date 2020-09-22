@@ -12,6 +12,7 @@
     "prepublishOnly": "npm run build",
     "pretest": "eslint --ext .js --ext .ts ./src",
     "test": "jest --forceExit --coverage --verbose ./src",
+    "ci:test": "./ci_test.sh",
     "build": "tsc",
     "start": "tsc -w"
   },
