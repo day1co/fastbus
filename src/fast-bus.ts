@@ -4,13 +4,15 @@ import { ClientOpts, RedisClient, createClient } from 'redis';
 
 const debug = Debug('fastbus');
 
-type FastBusOpts = {
+interface FastBusOpts {
   prefix?: string;
   redis?: ClientOpts;
   createRedisClient?: (ClientOpts) => RedisClient;
-};
+}
 
-type FastBusSubscriber = (string) => void;
+interface FastBusSubscriber {
+  (string): void;
+}
 
 export class FastBus {
   prefix: string;
