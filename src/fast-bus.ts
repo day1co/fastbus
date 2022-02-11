@@ -6,7 +6,7 @@ const debug = Debug('fastbus');
 
 interface FastBusOpts {
   prefix?: string;
-  redis?: ClientOpts;
+  redis: ClientOpts;
   createRedisClient?: (ClientOpts) => RedisClient;
 }
 
@@ -20,7 +20,7 @@ export class FastBus {
   pubClient: RedisClient;
   subClient: RedisClient;
 
-  constructor(opts?: FastBusOpts) {
+  constructor(opts: FastBusOpts) {
     this.init(opts);
   }
 
@@ -113,7 +113,7 @@ export class FastBus {
     this.pubClient.end(true);
   }
 
-  static create(opts?: FastBusOpts): FastBus {
+  static create(opts: FastBusOpts): FastBus {
     return new FastBus(opts);
   }
 }
