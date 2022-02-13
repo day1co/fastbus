@@ -1,37 +1,37 @@
 name: CI-Test
 
 on:
-  push:
-    branches:
-      - feature/*
   pull_request:
     branches:
-      - develop
       - main
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    if: "! contains(toJSON(github.event.pull_request.labels.*.name), 'ci-skip')"
     timeout-minutes: 10
-
-    strategy:
-      matrix:
-        node-version: [14.x]
-
-    services:
-      redis:
-        image: redis
-        ports:
-          - 6379:6379
-        options: --entrypoint redis-server
 
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
         with:
-          node-version: ${{ matrix.node-version }}
-      - run: npm ci
-      - run: npm run ci:test
+          node-version: '16'
+          cache: 'npm'
+      - name: Prepare dot npmrc for private registry
+        run: echo //npm.pkg.github.com/:_authToken=${{ secrets.NPM_TOKEN }} >> ~/.npmrc
+      - name: Bootstrap
+        if: steps.node-cache.outputs.cache-hit != 'true'
+        run: npm ci
+        env:
+          NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+      - name: Lint
+        run: npm run lint
+        env:
+          NODE_ENV: dev
+          CI: true
+      - name: Test
+        run: npm run test
         env:
           NODE_ENV: test
           CI: true

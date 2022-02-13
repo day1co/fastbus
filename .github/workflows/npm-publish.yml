@@ -1,6 +1,6 @@
-name: fastbus-npm-publish
+name: npm-publish
 concurrency:
-  group: fastbus-npm-publish-${{github.sha}}
+  group: npm-publish-${{github.sha}}
   cancel-in-progress: false
 
 on:
@@ -33,12 +33,14 @@ jobs:
       - run: |
           PUSH_TOKEN_OWNER=`gh api user | jq -r .login`
           echo "::set-output name=PUSH_TOKEN_OWNER::$PUSH_TOKEN_OWNER"
+
           echo "PUSH_TOKEN_OWNER is $PUSH_TOKEN_OWNER"
           echo "PUSHER is $PUSHER"
         id: push-token-owner
         env:
           GH_TOKEN: ${{ env.PUSH_TOKEN }}
           PUSHER: ${{ github.event.pusher.name }}
+
   ci-label-test:
     needs: check-pusher
     # 봇이 액션을 일으키는 것을 방지 (푸시한 사람이 토큰 OWNER인 경우 작동하지 않음)
@@ -86,15 +88,19 @@ jobs:
         run: |
           VERSION_CHANGED=$(git diff ${{ github.event.before }}..${{ github.event.after }} package.json | (grep -c -E "^\+\s+\"version\"" || true) )
           echo "::set-output name=version_changed::$VERSION_CHANGED"
+
       - name: npm version patch when versionChanged eq 0
         if: ${{ steps.version-changed.outputs.version_changed == 0 }}
         run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
+
           npm --no-git-tag-version version patch
           PACKAGE_NAME=$(jq -r .name package.json)
           PACKAGE_VERSION=$(jq -r .version package.json)
+
           git status
+
           git commit -m "$PACKAGE_NAME: bump up to $PACKAGE_VERSION" package.json package-lock.json
           git pull --rebase
           git push origin
