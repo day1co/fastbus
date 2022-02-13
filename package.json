@@ -2,12 +2,12 @@
   "name": "@day1co/fastbus",
   "version": "3.0.0",
   "description": "fast and simple pub/sub using redis",
-  "url": "https://github.com/fastcampus/fastbus",
-  "repository": "https://github.com/fastcampus/fastbus",
-  "author": "iolo@fastcampus.co.kr",
+  "url": "https://github.com/day1co/fastbus",
+  "repository": "https://github.com/day1co/fastbus",
+  "author": "iolo@day1company.co.kr",
   "license": "MIT",
-  "main": "dist/index.js",
-  "types": "dist/index.d.js",
+  "main": "lib/index.js",
+  "types": "lib/index.d.js",
   "scripts": {
     "prepublishOnly": "npm run build",
     "pretest": "npm run lint",
@@ -22,7 +22,7 @@
     "@tsconfig/node16": "^1.0.2",
     "@types/jest": "^27.4.0",
     "@types/node": "^17.0.17",
-    "@types/redis": "^2.8.32",
+    "@types/redis": "=2.8.32",
     "@typescript-eslint/eslint-plugin": "^5.11.0",
     "@typescript-eslint/parser": "^5.11.0",
     "eslint": "^8.8.0",
@@ -35,6 +35,6 @@
     "typescript": "^4.5.5"
   },
   "dependencies": {
-    "redis": "^3.1.2"
+    "redis": "=3.1.2"
   }
 }
