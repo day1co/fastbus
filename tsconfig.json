@@ -1,7 +1,6 @@
 {
   "extends": "@tsconfig/node16/tsconfig.json",
   "compilerOptions": {
-    "strictPropertyInitialization": false,
     "allowSyntheticDefaultImports": true,
     "allowJs": true,
     "checkJs": true,
@@ -10,7 +9,7 @@
     "noImplicitAny": false,
     "moduleResolution": "node",
     "sourceMap": true,
-    "outDir": "dist"
+    "outDir": "lib"
   },
   "include": ["src"],
   "exclude": ["node_modules", "**/*.spec.ts"]
