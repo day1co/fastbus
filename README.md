@@ -2,7 +2,7 @@
 
 fast and simple pubsub using redis
 
-[![npm version](https://badge.fury.io/js/%40fastcampus%2Ffastbus.svg)](https://badge.fury.io/js/%40fastcampus%2Ffastbus)
+![version](https://img.shields.io/github/package-json/v/day1co/fastbus)
 
 ## Getting Started
 
@@ -11,8 +11,8 @@ const FastBus = require('../lib');
 
 const bus = FastBus.create({ prefix: 'bus', redis: { host: 'localhost', port: 6379, db: 0 } });
 
-bus.subscribe('greeting', message => console.log('hello', message));
-bus.subscribe('greeting', message => console.log('hi', message));
+bus.subscribe('greeting', (message) => console.log('hello', message));
+bus.subscribe('greeting', (message) => console.log('hi', message));
 
 bus.publish('greeting', 'there');
 // hello, there
@@ -43,4 +43,5 @@ $ npm start
 ```
 
 ---
+
 may the **SOURCE** be with you...
