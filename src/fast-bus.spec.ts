@@ -21,12 +21,12 @@ describe('FastBus', () => {
 
   describe('publish/subscribe', () => {
     test('should forward messages to only one receiver', (done) => {
-      const acc = [];
-      bus.subscribe('hello', (message) => {
+      const acc: unknown[] = [];
+      bus.subscribe('hello', (message: string) => {
         acc.push(message);
       });
-      const acc2 = [];
-      bus.subscribe('hello', (message) => {
+      const acc2: unknown[] = [];
+      bus.subscribe('hello', (message: string) => {
         acc2.push(message);
       });
       bus.publish('hello', 'foo');
@@ -41,13 +41,13 @@ describe('FastBus', () => {
     });
 
     test('should not forward messages after unreceive', (done) => {
-      const acc = [];
-      const listener1 = (message) => {
+      const acc: unknown[] = [];
+      const listener1 = (message: string) => {
         acc.push(message);
       };
       bus.subscribe('hello', listener1);
-      const acc2 = [];
-      const listener2 = (message) => {
+      const acc2: unknown[] = [];
+      const listener2 = (message: string) => {
         acc2.push(message);
       };
       bus.subscribe('hello', listener2);
@@ -70,12 +70,12 @@ describe('FastBus', () => {
 
   describe('broadcast', () => {
     it('should forward messages to all subscribers', (done) => {
-      const acc = [];
-      bus.subscribe('hello', (message) => {
+      const acc: unknown[] = [];
+      bus.subscribe('hello', (message: string) => {
         acc.push(message);
       });
-      const acc2 = [];
-      bus.subscribe('hello', (message) => {
+      const acc2: unknown[] = [];
+      bus.subscribe('hello', (message: string) => {
         acc2.push(message);
       });
       bus.publish('hello', 'foo', true);
@@ -90,13 +90,13 @@ describe('FastBus', () => {
     });
 
     test('should not forward messages after unsubscribe', (done) => {
-      const acc = [];
-      const listener1 = (message) => {
+      const acc: unknown[] = [];
+      const listener1 = (message: string) => {
         acc.push(message);
       };
       bus.subscribe('hello', listener1);
-      const acc2 = [];
-      const listener2 = (message) => {
+      const acc2: unknown[] = [];
+      const listener2 = (message: string) => {
         acc2.push(message);
       };
       bus.subscribe('hello', listener2);

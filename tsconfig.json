@@ -1,13 +1,12 @@
 {
+  "extends": "@tsconfig/node16/tsconfig.json",
   "compilerOptions": {
-    "module": "commonjs",
-    "esModuleInterop": true,
+    "strictPropertyInitialization": false,
     "allowSyntheticDefaultImports": true,
     "allowJs": true,
     "checkJs": true,
     "newLine": "lf",
     "declaration": true,
-    "target": "es6",
     "noImplicitAny": false,
     "moduleResolution": "node",
     "sourceMap": true,
