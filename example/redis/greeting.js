@@ -1,6 +1,6 @@
-const FastBus = require('../lib');
+const { RedisBus } = require('../../lib');
 
-const bus = FastBus.create({ prefix: 'bus', redis: { host: 'localhost', port: 6379, db: 0 } });
+const bus = new RedisBus({ prefix: 'bus', redis: { host: 'localhost', port: 6379, db: 0 } });
 
 bus.subscribe('greeting', (message) => console.log('hello', message));
 bus.subscribe('greeting', (message) => console.log('hi', message));
