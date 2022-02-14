@@ -1,1 +1,2 @@
-export { FastBus } from './fast-bus';
+export { RedisBus } from './redis-bus';
+export { CloudPubSubBus } from './cloud-pubsub-bus';
