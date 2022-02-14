@@ -1,13 +1,14 @@
 import Debug from 'debug';
+import { Redis, RedisOptions } from 'ioredis';
+import IORedis from 'ioredis';
 import { EventEmitter } from 'events';
-import { ClientOpts, RedisClient, createClient } from 'redis';
 
 const debug = Debug('fastbus');
 
 interface FastBusOpts {
   prefix?: string;
-  redis?: ClientOpts;
-  createRedisClient?: (ClientOpts) => RedisClient;
+  redis?: RedisOptions;
+  createRedisClient?: (RedisOptions?) => Redis;
 }
 
 interface FastBusSubscriber {
@@ -17,13 +18,12 @@ interface FastBusSubscriber {
 export class FastBus {
   prefix: string;
   subscriptions: EventEmitter;
-  pubClient: RedisClient;
-  subClient: RedisClient;
+  pubClient: Redis;
+  subClient: Redis;
 
   constructor(opts?: FastBusOpts) {
-    const createRedisClient = opts?.createRedisClient ?? createClient;
-    this.pubClient = createRedisClient(opts?.redis);
-    this.subClient = createRedisClient(opts?.redis);
+    this.pubClient = opts?.createRedisClient ? opts?.createRedisClient(opts?.redis) : new IORedis(opts?.redis);
+    this.subClient = opts?.createRedisClient ? opts?.createRedisClient(opts?.redis) : new IORedis(opts?.redis);
     debug(`connect redis: ${opts?.redis?.host}:${opts?.redis?.port}/${opts?.redis?.db}`);
 
     this.prefix = `${opts?.prefix ?? 'bus'}:${opts?.redis?.db ?? '0'}:`;
@@ -64,8 +64,8 @@ export class FastBus {
   destroy() {
     debug('destroy');
     this.unsubscribeAll();
-    this.subClient.end(true);
-    this.pubClient.end(true);
+    this.subClient.disconnect();
+    this.pubClient.disconnect();
   }
 
   // 주의: redis pub/sub 은 db(key space)를 구분하지 않음 기본 db가 아니면 토픽 이름에 db 를 포함

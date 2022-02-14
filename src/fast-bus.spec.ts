@@ -1,4 +1,4 @@
-import redis from 'redis-mock';
+import Redis from 'ioredis-mock';
 import { FastBus } from './fast-bus';
 
 describe('FastBus', () => {
@@ -7,14 +7,13 @@ describe('FastBus', () => {
   const TEST_DELAY = 100;
 
   beforeEach((done) => {
-    const redisConfig = { host: 'localhost', port: 6379, db: 0 };
-    bus = FastBus.create({ prefix: 'bustest', redis: redisConfig, createRedisClient: redis.createClient });
-    client = redis.createClient(redisConfig);
+    bus = FastBus.create({ createRedisClient: () => new Redis() });
+    client = new Redis();
     client.flushdb(done);
   });
 
   afterEach((done) => {
-    client.end(true);
+    client.disconnect();
     bus.destroy();
     setTimeout(done, TEST_DELAY);
   });
