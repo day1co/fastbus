@@ -12,6 +12,7 @@ interface RedisBusOpts extends FastBusOpts {
   createRedisClient?: (RedisOptions?) => Redis;
 }
 export class RedisBus implements BaseBus {
+  busType: string;
   prefix: string;
   subscriptions: EventEmitter;
   pubClient: Redis;
@@ -22,6 +23,7 @@ export class RedisBus implements BaseBus {
     this.subClient = opts?.createRedisClient ? opts?.createRedisClient(opts?.redis) : new IORedis(opts?.redis);
     debug(`connect redis: ${opts?.redis?.host}:${opts?.redis?.port}/${opts?.redis?.db}`);
 
+    this.busType = 'Redis';
     this.prefix = `${opts?.prefix ?? 'bus'}:${opts?.redis?.db ?? '0'}:`;
 
     this.subscriptions = new EventEmitter();
@@ -58,7 +60,6 @@ export class RedisBus implements BaseBus {
   }
 
   destroy() {
-    debug('destroy');
     this.unsubscribeAll();
     this.subClient.disconnect();
     this.pubClient.disconnect();
