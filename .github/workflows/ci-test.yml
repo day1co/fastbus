@@ -18,6 +18,10 @@ jobs:
         with:
           node-version: '16'
           cache: 'npm'
+      - name: 'Install Cloud SDK'
+        uses: google-github-actions/setup-gcloud@v0
+        with:
+          install_components: 'beta,pubsub-emulator'
       - name: Prepare dot npmrc for private registry
         run: echo //npm.pkg.github.com/:_authToken=${{ secrets.NPM_TOKEN }} >> ~/.npmrc
       - name: Bootstrap
@@ -30,8 +34,12 @@ jobs:
         env:
           NODE_ENV: dev
           CI: true
+      - name: 'Start Pub/Sub emulator'
+        run: |
+          gcloud beta emulators pubsub start --project=project-test --host-port=0.0.0.0:8085 &
       - name: Test
         run: npm run test
         env:
           NODE_ENV: test
+          PUBSUB_EMULATOR_HOST: 'localhost:8085'
           CI: true
