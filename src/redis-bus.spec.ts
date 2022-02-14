@@ -1,13 +1,13 @@
 import Redis from 'ioredis-mock';
-import { FastBus } from './fast-bus';
+import { RedisBus } from './redis-bus';
 
-describe('FastBus', () => {
+describe('RedisBus', () => {
   let bus;
   let client;
   const TEST_DELAY = 100;
 
   beforeEach((done) => {
-    bus = FastBus.create({ createRedisClient: () => new Redis() });
+    bus = new RedisBus({ createRedisClient: () => new Redis() });
     client = new Redis();
     client.flushdb(done);
   });
@@ -20,34 +20,34 @@ describe('FastBus', () => {
 
   describe('publish/subscribe', () => {
     test('should forward messages to only one receiver', (done) => {
-      const acc: unknown[] = [];
+      const messages: unknown[] = [];
       bus.subscribe('hello', (message: string) => {
-        acc.push(message);
+        messages.push(message);
       });
-      const acc2: unknown[] = [];
+      const messages2: unknown[] = [];
       bus.subscribe('hello', (message: string) => {
-        acc2.push(message);
+        messages2.push(message);
       });
       bus.publish('hello', 'foo');
       bus.publish('hello', 'bar');
       bus.publish('hello', 'baz');
       bus.publish('hello', 'qux');
       setTimeout(() => {
-        expect(acc).toEqual(['foo', 'bar', 'baz', 'qux']);
-        expect(acc2).toEqual([]);
+        expect(messages).toEqual(['foo', 'bar', 'baz', 'qux']);
+        expect(messages2).toEqual([]);
         done();
       }, TEST_DELAY);
     });
 
     test('should not forward messages after unreceive', (done) => {
-      const acc: unknown[] = [];
+      const messages: unknown[] = [];
       const listener1 = (message: string) => {
-        acc.push(message);
+        messages.push(message);
       };
       bus.subscribe('hello', listener1);
-      const acc2: unknown[] = [];
+      const messages2: unknown[] = [];
       const listener2 = (message: string) => {
-        acc2.push(message);
+        messages2.push(message);
       };
       bus.subscribe('hello', listener2);
       bus.publish('hello', 'foo');
@@ -58,8 +58,8 @@ describe('FastBus', () => {
           bus.publish('hello', 'baz');
           bus.publish('hello', 'qux');
           setTimeout(() => {
-            expect(acc).toEqual(['foo', 'bar']);
-            expect(acc2).toEqual(['baz', 'qux']);
+            expect(messages).toEqual(['foo', 'bar']);
+            expect(messages2).toEqual(['baz', 'qux']);
             done();
           }, TEST_DELAY);
         }, TEST_DELAY);
@@ -69,34 +69,34 @@ describe('FastBus', () => {
 
   describe('broadcast', () => {
     it('should forward messages to all subscribers', (done) => {
-      const acc: unknown[] = [];
+      const messages: unknown[] = [];
       bus.subscribe('hello', (message: string) => {
-        acc.push(message);
+        messages.push(message);
       });
-      const acc2: unknown[] = [];
+      const messages2: unknown[] = [];
       bus.subscribe('hello', (message: string) => {
-        acc2.push(message);
+        messages2.push(message);
       });
       bus.publish('hello', 'foo', true);
       bus.publish('hello', 'bar', true);
       bus.publish('hello', 'baz', true);
       bus.publish('hello', 'qux', true);
       setTimeout(() => {
-        expect(acc).toEqual(['foo', 'bar', 'baz', 'qux']);
-        expect(acc2).toEqual(['foo', 'bar', 'baz', 'qux']);
+        expect(messages).toEqual(['foo', 'bar', 'baz', 'qux']);
+        expect(messages2).toEqual(['foo', 'bar', 'baz', 'qux']);
         done();
       }, TEST_DELAY);
     });
 
     test('should not forward messages after unsubscribe', (done) => {
-      const acc: unknown[] = [];
+      const messages: unknown[] = [];
       const listener1 = (message: string) => {
-        acc.push(message);
+        messages.push(message);
       };
       bus.subscribe('hello', listener1);
-      const acc2: unknown[] = [];
+      const messages2: unknown[] = [];
       const listener2 = (message: string) => {
-        acc2.push(message);
+        messages2.push(message);
       };
       bus.subscribe('hello', listener2);
       bus.publish('hello', 'foo', true);
@@ -107,8 +107,8 @@ describe('FastBus', () => {
           bus.publish('hello', 'baz', true);
           bus.publish('hello', 'qux', true);
           setTimeout(() => {
-            expect(acc).toEqual(['foo', 'bar']);
-            expect(acc2).toEqual(['foo', 'bar', 'baz', 'qux']);
+            expect(messages).toEqual(['foo', 'bar']);
+            expect(messages2).toEqual(['foo', 'bar', 'baz', 'qux']);
             done();
           }, TEST_DELAY);
         }, TEST_DELAY);
