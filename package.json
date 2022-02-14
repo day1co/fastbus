@@ -1,6 +1,6 @@
 {
   "name": "@day1co/fastbus",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "fast and simple pub/sub using redis",
   "url": "https://github.com/day1co/fastbus",
   "repository": "https://github.com/day1co/fastbus",
