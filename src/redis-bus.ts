@@ -2,26 +2,22 @@ import Debug from 'debug';
 import { Redis, RedisOptions } from 'ioredis';
 import IORedis from 'ioredis';
 import { EventEmitter } from 'events';
+import { BaseBus, FastBusOpts, FastBusSubscriber } from './fast-bus.interface';
 
 const debug = Debug('fastbus');
 
-interface FastBusOpts {
+interface RedisBusOpts extends FastBusOpts {
   prefix?: string;
   redis?: RedisOptions;
   createRedisClient?: (RedisOptions?) => Redis;
 }
-
-interface FastBusSubscriber {
-  (string): void;
-}
-
-export class FastBus {
+export class RedisBus implements BaseBus {
   prefix: string;
   subscriptions: EventEmitter;
   pubClient: Redis;
   subClient: Redis;
 
-  constructor(opts?: FastBusOpts) {
+  constructor(opts?: RedisBusOpts) {
     this.pubClient = opts?.createRedisClient ? opts?.createRedisClient(opts?.redis) : new IORedis(opts?.redis);
     this.subClient = opts?.createRedisClient ? opts?.createRedisClient(opts?.redis) : new IORedis(opts?.redis);
     debug(`connect redis: ${opts?.redis?.host}:${opts?.redis?.port}/${opts?.redis?.db}`);
@@ -74,7 +70,6 @@ export class FastBus {
   }
 
   publish(topic: string, message: string, broadcast: boolean = false) {
-    debug('publish', topic, message, broadcast);
     const channel = this.toChannelName(topic);
     if (broadcast) {
       this.pubClient.publish(channel, message);
@@ -91,17 +86,14 @@ export class FastBus {
   }
 
   subscribe(topic: string, listener: FastBusSubscriber) {
-    debug('subscribe', topic);
     this.subscriptions.on(this.toChannelName(topic), listener);
   }
 
   unsubscribe(topic: string, listener: FastBusSubscriber) {
-    debug('unsubscribe', topic);
     this.subscriptions.off(this.toChannelName(topic), listener);
   }
 
   unsubscribeAll(topic?: string) {
-    debug('unsubscribeAll', topic);
     if (topic) {
       this.subscriptions.removeAllListeners(this.toChannelName(topic));
     } else {
@@ -109,7 +101,7 @@ export class FastBus {
     }
   }
 
-  static create(opts?: FastBusOpts): FastBus {
-    return new FastBus(opts);
+  static create(opts?: RedisBusOpts): RedisBus {
+    return new RedisBus(opts);
   }
 }
