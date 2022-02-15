@@ -1,10 +1,10 @@
-import Debug from 'debug';
+import pino from 'pino';
 import { Redis, RedisOptions } from 'ioredis';
 import IORedis from 'ioredis';
 import { EventEmitter } from 'events';
 import { BaseBus, FastBusSubscriber } from './fast-bus.interface';
 
-const debug = Debug('fastbus');
+const logger = pino({ name: 'redis-bus' });
 
 interface RedisBusOpts {
   prefix?: string;
@@ -21,7 +21,7 @@ export class RedisBus implements BaseBus {
   constructor(opts?: RedisBusOpts) {
     this.pubClient = opts?.createRedisClient ? opts?.createRedisClient(opts?.redis) : new IORedis(opts?.redis);
     this.subClient = opts?.createRedisClient ? opts?.createRedisClient(opts?.redis) : new IORedis(opts?.redis);
-    debug(`connect redis: ${opts?.redis?.host}:${opts?.redis?.port}/${opts?.redis?.db}`);
+    logger.debug(`connect redis: ${opts?.redis?.host}:${opts?.redis?.port}/${opts?.redis?.db}`);
 
     this.subscriptions = new EventEmitter();
     this.subscriptions.setMaxListeners(Infinity);
@@ -29,13 +29,13 @@ export class RedisBus implements BaseBus {
     this.prefix = `${opts?.prefix ?? 'bus'}:${opts?.redis?.db ?? '0'}:`;
 
     this.subClient.on('pmessage', (pattern, channel, message) => {
-      debug('on pmessage', pattern, channel, message);
+      logger.debug('on pmessage', pattern, channel, message);
       if (this.subscriptions.listenerCount(channel) === 0) {
-        debug('**ignore** no subscriber!', channel, message);
+        logger.debug('**ignore** no subscriber!', channel, message);
         return;
       }
       if (channel !== message) {
-        debug('forward to all subscribers!', channel, message);
+        logger.debug('forward to all subscribers!', channel, message);
         this.subscriptions.emit(channel, message);
         return;
       }
@@ -43,19 +43,19 @@ export class RedisBus implements BaseBus {
       const listener = this.subscriptions.listeners(channel)[0];
       this.pubClient.rpop(channel, (err, message) => {
         if (err) {
-          debug('**warning** rpop error!', err, channel);
+          logger.error('rpop error!', err, channel);
         }
         if (message) {
           listener(message);
-          debug('forward to the first subscriber!', channel);
+          logger.debug('forward to the first subscriber!', channel);
         } else {
-          debug('**warning** nothing to forward!', channel);
+          logger.debug('nothing to forward!', channel);
         }
       });
     });
 
     this.subClient.psubscribe(`${this.prefix}*`);
-    debug(`psubscribe ${this.prefix}*`);
+    logger.debug(`psubscribe ${this.prefix}*`);
   }
 
   destroy() {
@@ -77,7 +77,7 @@ export class RedisBus implements BaseBus {
     }
     this.pubClient.lpush(channel, message, (err) => {
       if (err) {
-        debug('**warning** lpush error!', channel, message, err);
+        logger.error('lpush error!', channel, message, err);
         return;
       }
       // XXX: channel === message to distinguish from broadcast
