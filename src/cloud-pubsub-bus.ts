@@ -1,8 +1,9 @@
-import Debug from 'debug';
+import pino from 'pino';
 import { PubSub, ClientConfig, Subscription, Message } from '@google-cloud/pubsub';
 import { EventEmitter } from 'events';
 import { BaseBus, FastBusSubscriber } from './fast-bus.interface';
-const debug = Debug('fastbus');
+
+const logger = pino({ name: 'cloud-pubsub-bus' });
 
 interface CloudPubsubBusOpts {
   clientConfig: ClientConfig;
@@ -30,7 +31,7 @@ export class CloudPubSubBus implements BaseBus {
 
   publish(topic: string, message: string, broadcast: boolean = false) {
     if (broadcast) {
-      debug('**warning** broadcast is not implemented!');
+      logger.warn('broadcast is not implemented!');
       return;
     }
     const dataBuffer = Buffer.from(message);
@@ -39,10 +40,10 @@ export class CloudPubSubBus implements BaseBus {
       .topic(topicName)
       .publish(dataBuffer)
       .then((messageId) => {
-        debug(`Message ${messageId} published`);
+        logger.debug(`Message ${messageId} published`);
       })
       .catch((err) => {
-        debug('**warning** publish error!', topicName, message, JSON.stringify(err));
+        logger.error('publish error!', topicName, message, JSON.stringify(err));
       });
   }
 
@@ -85,13 +86,13 @@ export class CloudPubSubBus implements BaseBus {
             message.nack();
             return;
           }
-          debug(`Received message: id ${message.id}, data ${message.data}`);
+          logger.debug(`Received message: id ${message.id}, data ${message.data}`);
           message.ack();
           const listener = this.subscriptions.listeners(subscriptionName)[0];
           listener(message.data.toString());
         })
         .on('error', (err) => {
-          debug('**warning** subscribe error!', JSON.stringify(err));
+          logger.error('subscribe error!', JSON.stringify(err));
         });
     }
 
