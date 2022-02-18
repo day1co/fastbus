@@ -1,5 +1,5 @@
 import { PubSub } from '@google-cloud/pubsub';
-import { CloudPubSubBus } from './';
+import { FastBus, BusType } from './';
 
 describe('CloudPubSubBus', () => {
   const SECOND_TO_MILS = 1_000;
@@ -23,7 +23,8 @@ describe('CloudPubSubBus', () => {
   });
 
   beforeEach((done) => {
-    bus = new CloudPubSubBus({ topicPrefix, subscriptionPrefix, clientConfig });
+    const fastBusOpts = { topicPrefix, subscriptionPrefix, clientConfig };
+    bus = FastBus.create({ fastBusOpts, busType: BusType.CLOUD_PUBSUB });
     done();
   });
 

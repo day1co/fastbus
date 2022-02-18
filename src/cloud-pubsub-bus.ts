@@ -5,10 +5,11 @@ import { BaseBus, FastBusSubscriber } from './fast-bus.interface';
 
 const logger = pino({ name: 'cloud-pubsub-bus' });
 
-interface CloudPubsubBusOpts {
+export interface CloudPubSubBusOpts {
   clientConfig: ClientConfig;
   topicPrefix?: string;
   subscriptionPrefix?: string;
+  createPubSubClient?: (ClientConfig) => PubSub;
 }
 
 export class CloudPubSubBus implements BaseBus {
@@ -19,8 +20,10 @@ export class CloudPubSubBus implements BaseBus {
   topicPrefix: string;
   subscriptionPrefix: string;
 
-  constructor(opts: CloudPubsubBusOpts) {
-    this.pubsub = new PubSub(opts.clientConfig);
+  constructor(opts: CloudPubSubBusOpts) {
+    this.pubsub = opts.createPubSubClient ? opts.createPubSubClient(opts.clientConfig) : new PubSub(opts.clientConfig);
+    logger.debug(`connect cloud pub sub: ${opts.clientConfig.projectId}`);
+
     this.subscriptions = new EventEmitter();
     this.subscriptions.setMaxListeners(Infinity);
     this.subscribeClients = {};

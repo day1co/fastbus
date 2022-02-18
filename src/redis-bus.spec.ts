@@ -1,5 +1,5 @@
 import Redis from 'ioredis-mock';
-import { RedisBus } from './redis-bus';
+import { FastBus } from './';
 
 describe('RedisBus', () => {
   let bus;
@@ -7,7 +7,7 @@ describe('RedisBus', () => {
   const TEST_DELAY = 100;
 
   beforeEach((done) => {
-    bus = new RedisBus({ createRedisClient: () => new Redis() });
+    bus = FastBus.create({ fastBusOpts: { createRedisClient: () => new Redis() } });
     client = new Redis();
     client.flushdb(done);
   });
