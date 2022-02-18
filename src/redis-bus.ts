@@ -6,7 +6,7 @@ import { BaseBus, FastBusSubscriber } from './fast-bus.interface';
 
 const logger = pino({ name: 'redis-bus' });
 
-interface RedisBusOpts {
+export interface RedisBusOpts {
   prefix?: string;
   redis?: RedisOptions;
   createRedisClient?: (RedisOptions?) => Redis;
