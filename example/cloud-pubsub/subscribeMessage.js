@@ -2,7 +2,7 @@
  * This sample demonstrates how to subscribe from subscription.
  */
 const main = async (topic = 'busTest') => {
-  const { CloudPubSubBus } = require('../../lib/cloud-pubsub-bus');
+  const { FastBus, BusType } = require('../../lib/fast-bus');
 
   const clientConfig = { projectId: 'project-test', apiEndpoint: 'localhost:8085' };
 
@@ -13,7 +13,7 @@ const main = async (topic = 'busTest') => {
   };
 
   // Create CloudPubSub Instance
-  const cloudPubSubBus = new CloudPubSubBus(gcpOptions);
+  const cloudPubSubBus = FastBus.create({ fastBusOpts: gcpOptions, busType: BusType.CLOUD_PUBSUB });
 
   // subscriptionName = subscriptionPrefix + topic
   console.log(`Subscriber to subscription ${gcpOptions.subscriptionPrefix}${topic} is ready to receive messages`);
