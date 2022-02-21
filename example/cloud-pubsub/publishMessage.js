@@ -2,7 +2,7 @@
  * This sample demonstrates how to publish message.
  */
 const main = (topic = 'busTest', data = JSON.stringify({ foo: 'bar' })) => {
-  const { CloudPubSubBus } = require('../../lib/cloud-pubsub-bus');
+  const { FastBus, BusType } = require('../../lib/fast-bus');
 
   const clientConfig = { projectId: 'project-test', apiEndpoint: 'localhost:8085' };
 
@@ -13,7 +13,7 @@ const main = (topic = 'busTest', data = JSON.stringify({ foo: 'bar' })) => {
   };
 
   // Create CloudPubSub Instance
-  const cloudPubSubBus = new CloudPubSubBus(gcpOptions);
+  const cloudPubSubBus = FastBus.create({ fastBusOpts: gcpOptions, busType: BusType.CLOUD_PUBSUB });
 
   cloudPubSubBus.publish(topic, data);
   console.log(`Message published to ${gcpOptions?.topicPrefix + topic}`);
