@@ -14,8 +14,8 @@ export interface CloudPubSubBusOpts {
 
 export class CloudPubSubBus implements BaseBus {
   pubsub: PubSub;
-  subscriptions: EventEmitter;
-  subscribeClients: Record<string, Subscription>;
+  eventEmitter: EventEmitter;
+  subscriptions: Record<string, Subscription>;
 
   topicPrefix: string;
   subscriptionPrefix: string;
@@ -24,9 +24,9 @@ export class CloudPubSubBus implements BaseBus {
     this.pubsub = opts.createPubSubClient ? opts.createPubSubClient(opts.clientConfig) : new PubSub(opts.clientConfig);
     logger.debug(`connect cloud pub sub: ${opts.clientConfig.projectId}`);
 
-    this.subscriptions = new EventEmitter();
-    this.subscriptions.setMaxListeners(Infinity);
-    this.subscribeClients = {};
+    this.eventEmitter = new EventEmitter();
+    this.eventEmitter.setMaxListeners(Infinity);
+    this.subscriptions = {};
 
     this.topicPrefix = opts.topicPrefix ?? '';
     this.subscriptionPrefix = opts.subscriptionPrefix ?? '';
@@ -43,10 +43,10 @@ export class CloudPubSubBus implements BaseBus {
       .topic(topicName)
       .publish(dataBuffer)
       .then((messageId) => {
-        logger.debug(`Message ${messageId} published`);
+        logger.debug(`message ${messageId} published`);
       })
       .catch((err) => {
-        logger.error('publish error!', topicName, message, JSON.stringify(err));
+        logger.error(`publish error!', topicName: ${topicName}, message: ${message}, error message: ${err.message}`);
       });
   }
 
@@ -56,46 +56,46 @@ export class CloudPubSubBus implements BaseBus {
   }
 
   unsubscribe(topic: string, listener: FastBusSubscriber) {
-    this.subscriptions.off(this.getSubscriptionName(topic), listener);
+    this.eventEmitter.off(this.getSubscriptionName(topic), listener);
   }
 
   unsubscribeAll(topic?: string) {
     if (topic) {
       const subscriptionName = this.getSubscriptionName(topic);
-      this.subscriptions.removeAllListeners(subscriptionName);
+      this.eventEmitter.removeAllListeners(subscriptionName);
       this.getSubscribeClient(subscriptionName).removeAllListeners();
     } else {
-      this.subscriptions.removeAllListeners();
-      for (const subscriptionName in this.subscribeClients) {
+      this.eventEmitter.removeAllListeners();
+      for (const subscriptionName in this.subscriptions) {
         this.getSubscribeClient(subscriptionName).removeAllListeners();
       }
     }
   }
 
   private onSubscription(subscriptionName: string, listener: FastBusSubscriber) {
-    this.subscriptions.on(subscriptionName, listener);
+    this.eventEmitter.on(subscriptionName, listener);
 
     let subscribeClient = this.getSubscribeClient(subscriptionName);
     if (!subscribeClient) {
-      this.subscribeClients[subscriptionName] = this.pubsub.subscription(subscriptionName);
+      this.subscriptions[subscriptionName] = this.pubsub.subscription(subscriptionName);
       subscribeClient = this.getSubscribeClient(subscriptionName);
     }
 
     if (subscribeClient.listenerCount('message') === 0) {
       subscribeClient
         .on('message', (message: Message) => {
-          if (this.subscriptions.listenerCount(subscriptionName) === 0) {
+          if (this.eventEmitter.listenerCount(subscriptionName) === 0) {
             this.getSubscribeClient(subscriptionName).removeAllListeners();
             message.nack();
             return;
           }
-          logger.debug(`Received message: id ${message.id}, data ${message.data}`);
+          logger.debug(`received message: id ${message.id}, data ${message.data}`);
           message.ack();
-          const listener = this.subscriptions.listeners(subscriptionName)[0];
+          const listener = this.eventEmitter.listeners(subscriptionName)[0];
           listener(message.data.toString());
         })
         .on('error', (err) => {
-          logger.error('subscribe error!', JSON.stringify(err));
+          logger.error(`subscribe error!, subscription name: ${subscriptionName}, error message ${err.message}`);
         });
     }
 
@@ -113,7 +113,7 @@ export class CloudPubSubBus implements BaseBus {
   }
 
   private getSubscribeClient(subscriptionName) {
-    return this.subscribeClients[subscriptionName];
+    return this.subscriptions[subscriptionName];
   }
 
   destroy() {

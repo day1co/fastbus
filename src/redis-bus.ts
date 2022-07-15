@@ -15,7 +15,6 @@ export class RedisBus implements BaseBus {
   subscriptions: EventEmitter;
   pubClient: Redis;
   subClient: Redis;
-
   prefix?: string;
 
   constructor(opts?: RedisBusOpts) {
@@ -77,7 +76,7 @@ export class RedisBus implements BaseBus {
     }
     this.pubClient.lpush(channel, message, (err) => {
       if (err) {
-        logger.error('lpush error!', channel, message, err);
+        logger.error(`lpush error!, channel: ${channel}, Message: ${message}, Error message: ${err.message}`);
         return;
       }
       // XXX: channel === message to distinguish from broadcast
