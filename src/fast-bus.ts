@@ -10,7 +10,7 @@ export enum BusType {
 }
 
 export class FastBus {
-  static create({ fastBusOpts, busType }: { fastBusOpts: FastBusOpts; busType?: BusType }): BaseBus | Error {
+  static create({ fastBusOpts, busType }: { fastBusOpts: FastBusOpts; busType?: BusType }): BaseBus {
     if (busType) {
       switch (busType) {
         case BusType.REDIS:
