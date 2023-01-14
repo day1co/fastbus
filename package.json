@@ -1,6 +1,6 @@
 {
   "name": "@day1co/fastbus",
-  "version": "3.1.3",
+  "version": "3.2.0",
   "description": "fast and simple pub/sub using redis",
   "url": "https://github.com/day1co/fastbus",
   "repository": "https://github.com/day1co/fastbus",
@@ -25,26 +25,31 @@
     "watch": "tsc -w"
   },
   "devDependencies": {
-    "@tsconfig/node16": "^1.0.2",
-    "@types/ioredis": "^4.28.8",
-    "@types/jest": "^27.4.0",
-    "@types/node": "^17.0.17",
-    "@typescript-eslint/eslint-plugin": "^5.11.0",
-    "@typescript-eslint/parser": "^5.11.0",
-    "eslint": "^8.9.0",
-    "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-prettier": "^4.0.0",
-    "ioredis-mock": "^7.0.0",
-    "jest": "^27.5.1",
+    "@day1co/eslint-config": "^0.0.1",
+    "@day1co/prettier-config": "^0.0.1",
+    "@day1co/tsconfig": "^1.1.3",
+    "@tsconfig/node-lts": "^18.12.1",
+    "@types/ioredis": "^4.28.10",
+    "@types/ioredis-mock": "^8.2.1",
+    "@types/jest": "^29.2.5",
+    "@types/node": "^18.11.18",
+    "@typescript-eslint/eslint-plugin": "^5.48.1",
+    "@typescript-eslint/parser": "^5.48.1",
+    "eslint": "^8.31.0",
+    "eslint-config-prettier": "^8.6.0",
+    "eslint-plugin-import": "^2.27.4",
+    "eslint-plugin-prettier": "^4.2.1",
+    "ioredis-mock": "^8.2.2",
+    "jest": "^29.3.1",
     "npm-run-all": "^4.1.5",
-    "pino": "^7.7.0",
-    "prettier": "^2.5.1",
-    "rimraf": "^3.0.2",
-    "ts-jest": "^27.1.3",
-    "typescript": "^4.5.5"
+    "pino": "^8.8.0",
+    "prettier": "^2.8.2",
+    "rimraf": "^4.0.4",
+    "ts-jest": "^29.0.5",
+    "typescript": "^4.9.4"
   },
   "dependencies": {
-    "@google-cloud/pubsub": "^3.0.1",
-    "ioredis": "^4.28.5"
+    "@google-cloud/pubsub": "^3.2.1",
+    "ioredis": "^5.2.5"
   }
 }
