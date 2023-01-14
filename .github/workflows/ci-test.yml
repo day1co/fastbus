@@ -16,8 +16,7 @@ jobs:
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v2
         with:
-          node-version: '16'
-          cache: 'npm'
+          node-version: '18'
       - name: 'Install Cloud SDK'
         uses: google-github-actions/setup-gcloud@v0
         with:
