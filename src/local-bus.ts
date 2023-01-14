@@ -4,7 +4,9 @@ import { BaseBus, FastBusSubscriber } from './fast-bus.interface';
 
 const logger = pino({ name: 'local-bus' });
 
-export interface LocalBusOpts {}
+export interface LocalBusOpts {
+  prefix?: string;
+}
 
 export class LocalBus implements BaseBus {
   eventEmitter: EventEmitter;
@@ -19,7 +21,7 @@ export class LocalBus implements BaseBus {
     this.unsubscribeAll();
   }
 
-  publish(topic: string, message: string, broadcast: boolean = false) {
+  publish(topic: string, message: string, broadcast = false) {
     logger.debug(`publish ${topic} ${message} ${broadcast}`);
     if (this.eventEmitter.listenerCount(topic) === 0) {
       logger.debug(`ignore publish: no subscriber! ${topic} ${message}`);

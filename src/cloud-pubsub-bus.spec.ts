@@ -1,12 +1,12 @@
 import { PubSub } from '@google-cloud/pubsub';
-import { FastBus, BusType } from './';
+import { FastBus, BusType, CloudPubSubBus } from './';
 
 describe('CloudPubSubBus', () => {
   const SECOND_TO_MILS = 1_000;
   jest.setTimeout(SECOND_TO_MILS * 10);
 
-  let bus;
-  let client;
+  let bus: CloudPubSubBus;
+  let client: PubSub;
   const projectId = 'project-test';
   const topic = 'busTest';
   const topicPrefix = 'topic-';
@@ -24,7 +24,7 @@ describe('CloudPubSubBus', () => {
 
   beforeEach((done) => {
     const fastBusOpts = { topicPrefix, subscriptionPrefix, clientConfig };
-    bus = FastBus.create({ fastBusOpts, busType: BusType.CLOUD_PUBSUB });
+    bus = <CloudPubSubBus>FastBus.create({ fastBusOpts, busType: BusType.CLOUD_PUBSUB });
     done();
   });
 

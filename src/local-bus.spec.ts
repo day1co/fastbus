@@ -2,7 +2,7 @@ import { setTimeout } from 'timers/promises';
 import { LocalBus } from './local-bus';
 
 describe('LocalBus', () => {
-  let bus;
+  let bus: LocalBus;
   const TEST_DELAY = 100;
 
   beforeEach(() => {
