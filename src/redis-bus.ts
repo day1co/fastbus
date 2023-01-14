@@ -9,7 +9,7 @@ const logger = pino({ name: 'redis-bus' });
 export interface RedisBusOpts {
   prefix?: string;
   redis?: RedisOptions;
-  createRedisClient?: (RedisOptions?) => Redis;
+  createRedisClient?: (opts?: RedisOptions) => Redis;
 }
 export class RedisBus implements BaseBus {
   subscriptions: EventEmitter;
@@ -18,8 +18,12 @@ export class RedisBus implements BaseBus {
   prefix?: string;
 
   constructor(opts?: RedisBusOpts) {
-    this.pubClient = opts?.createRedisClient ? opts?.createRedisClient(opts?.redis) : new IORedis(opts?.redis);
-    this.subClient = opts?.createRedisClient ? opts?.createRedisClient(opts?.redis) : new IORedis(opts?.redis);
+    this.pubClient = opts?.createRedisClient
+      ? opts?.createRedisClient(opts?.redis ?? {})
+      : new IORedis(opts?.redis ?? {});
+    this.subClient = opts?.createRedisClient
+      ? opts?.createRedisClient(opts?.redis ?? {})
+      : new IORedis(opts?.redis ?? {});
     logger.debug(`connect redis: ${opts?.redis?.host}:${opts?.redis?.port}/${opts?.redis?.db}`);
 
     this.subscriptions = new EventEmitter();
@@ -64,11 +68,11 @@ export class RedisBus implements BaseBus {
   }
 
   // 주의: redis pub/sub 은 db(key space)를 구분하지 않음 기본 db가 아니면 토픽 이름에 db 를 포함
-  private toChannelName(topic) {
+  private toChannelName(topic: string) {
     return this.prefix + topic;
   }
 
-  publish(topic: string, message: string, broadcast: boolean = false) {
+  publish(topic: string, message: string, broadcast = false) {
     const channel = this.toChannelName(topic);
     if (broadcast) {
       this.pubClient.publish(channel, message);

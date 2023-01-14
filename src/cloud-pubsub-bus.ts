@@ -9,7 +9,7 @@ export interface CloudPubSubBusOpts {
   clientConfig: ClientConfig;
   topicPrefix?: string;
   subscriptionPrefix?: string;
-  createPubSubClient?: (ClientConfig) => PubSub;
+  createPubSubClient?: (opts: ClientConfig) => PubSub;
 }
 
 export class CloudPubSubBus implements BaseBus {
@@ -32,7 +32,7 @@ export class CloudPubSubBus implements BaseBus {
     this.subscriptionPrefix = opts.subscriptionPrefix ?? '';
   }
 
-  publish(topic: string, message: string, broadcast: boolean = false) {
+  publish(topic: string, message: string, broadcast = false) {
     if (broadcast) {
       logger.warn('broadcast is not implemented!');
       return;
@@ -112,7 +112,7 @@ export class CloudPubSubBus implements BaseBus {
     return this.subscriptionPrefix + topic;
   }
 
-  private getSubscribeClient(subscriptionName) {
+  private getSubscribeClient(subscriptionName: string) {
     return this.subscriptions[subscriptionName];
   }
 
