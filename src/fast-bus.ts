@@ -1,7 +1,7 @@
-import { BaseBus } from './fast-bus.interface';
-import { RedisBus, RedisBusOpts } from './redis-bus';
 import { CloudPubSubBus, CloudPubSubBusOpts } from './cloud-pubsub-bus';
+import { BaseBus } from './fast-bus.interface';
 import { LocalBus, LocalBusOpts } from './local-bus';
+import { RedisBus, RedisBusOpts } from './redis-bus';
 
 type FastBusOpts = RedisBusOpts | CloudPubSubBusOpts | LocalBusOpts;
 

@@ -1,6 +1,6 @@
-import pino from 'pino';
-import { PubSub, ClientConfig, Subscription, Message } from '@google-cloud/pubsub';
 import { EventEmitter } from 'events';
+import { PubSub, ClientConfig, Subscription, Message } from '@google-cloud/pubsub';
+import pino from 'pino';
 import { BaseBus, FastBusSubscriber } from './fast-bus.interface';
 
 const logger = pino({ name: 'cloud-pubsub-bus' });
