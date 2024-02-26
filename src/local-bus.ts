@@ -1,5 +1,5 @@
-import pino from 'pino';
 import { EventEmitter } from 'events';
+import pino from 'pino';
 import { BaseBus, FastBusSubscriber } from './fast-bus.interface';
 
 const logger = pino({ name: 'local-bus' });

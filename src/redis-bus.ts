@@ -1,7 +1,7 @@
-import pino from 'pino';
+import { EventEmitter } from 'events';
 import { Redis, RedisOptions } from 'ioredis';
 import IORedis from 'ioredis';
-import { EventEmitter } from 'events';
+import pino from 'pino';
 import { BaseBus, FastBusSubscriber } from './fast-bus.interface';
 
 const logger = pino({ name: 'redis-bus' });
