@@ -18,7 +18,7 @@ jobs:
         with:
           node-version: '20.x'
       - name: 'Install Cloud SDK'
-        uses: google-github-actions/setup-gcloud@v0
+        uses: google-github-actions/setup-gcloud@v2
         with:
           install_components: 'beta,pubsub-emulator'
       - name: Prepare dot npmrc for private registry
